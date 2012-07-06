@@ -20,9 +20,6 @@
             </intent-filter>
         </activity>
         
-            
-       	<provider android:name="com.brandontate.androidwebviewselection.BTInternalContentProvider"
-          android:authorities="com.brandontate.androidwebviewselection.internal" />
     </application>
 
 </manifest>

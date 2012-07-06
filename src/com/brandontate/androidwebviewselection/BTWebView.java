@@ -248,6 +248,12 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	}
 	
 	
+	//*****************************************************
+	//*
+	//*		Selection Layer Handling
+	//*
+	//*****************************************************
+	
 	/**
 	 * Creates the selection layer.
 	 * 
@@ -416,6 +422,12 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		
 	}
 	
+	//*****************************************************
+	//*
+	//*		DragListener Methods
+	//*
+	//*****************************************************
+	
 	/**
 	 * Start dragging a view.
 	 *
@@ -558,6 +570,13 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		this.contextMenuVisible = true;
 		mContextMenu.show(this, displayRect);
 	}
+	
+	
+	//*****************************************************
+	//*
+	//*		OnDismiss Listener
+	//*
+	//*****************************************************
 	
 	/**
 	 * Clears the selection when the context menu is dismissed.
