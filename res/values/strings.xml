@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, BTAndroidWebViewSelectionActivity!</string>
+    <string name="app_name">BT Android WebView Selection</string>
+
+</resources>
