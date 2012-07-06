@@ -12,10 +12,10 @@ the interface methods necessary to draw the selection layer with the handles and
 this with will need the following javascript imports.
 
 <pre>
-    <script src='jquery.js'></script>
-    <script src='rangy-core.js'></script>
-    <script src='rangy-serializer.js'></script>
-    <script src='android.selection.js'></script>
+    &lt;script src='jquery.js'&gt;&lt;/script&gt;
+	&lt;script src='rangy-core.js'&gt;&lt;/script&gt;
+	&lt;script src='rangy-serializer.js'&gt;&lt;/script&gt;
+	&lt;script src='android.selection.js'&gt;&lt;/script&gt;
 </pre>
 </p>
 
