@@ -11,11 +11,12 @@ selection out of the equation.  This has been tested from 2.2 to 4.0.3. </p>
 the interface methods necessary to draw the selection layer with the handles and show the context menu. Any content you wish to use 
 this with will need the following javascript imports.
 
+<pre>
     <script src='jquery.js'></script>
     <script src='rangy-core.js'></script>
     <script src='rangy-serializer.js'></script>
     <script src='android.selection.js'></script>
-
+</pre>
 </p>
 
 <p>
