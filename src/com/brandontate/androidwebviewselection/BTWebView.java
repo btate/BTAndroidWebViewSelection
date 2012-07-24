@@ -129,10 +129,11 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
 		
-		float xPoint = getDensityIndependentValue(event.getX(), ctx);
-		float yPoint = getDensityIndependentValue(event.getY(), ctx);
+		float xPoint = getDensityIndependentValue(event.getX(), ctx) / getDensityIndependentValue(this.getScale(), ctx);
+		float yPoint = getDensityIndependentValue(event.getY(), ctx) / getDensityIndependentValue(this.getScale(), ctx);
+		
+		// TODO: Need to update this to use this.getScale() as a factor.
 		
 		if(event.getAction() == MotionEvent.ACTION_DOWN){
 			
@@ -224,6 +225,10 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		this.getSettings().setJavaScriptEnabled(true);
 		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		this.getSettings().setPluginsEnabled(true);
+		
+		// Zoom out fully
+		//this.getSettings().setLoadWithOverviewMode(true);
+		//this.getSettings().setUseWideViewPort(true);
 		
 		// Javascript interfaces
 		this.textSelectionJSInterface = new TextSelectionJavascriptInterface(context, this);		
@@ -456,15 +461,17 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams) this.mStartSelectionHandle.getLayoutParams();
 		MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams) this.mEndSelectionHandle.getLayoutParams();
 		
+		float scale = getDensityIndependentValue(this.getScale(), ctx);
+		
 		float startX = startHandleParams.x - this.getScrollX();
 		float startY = startHandleParams.y - this.getScrollY();
 		float endX = endHandleParams.x - this.getScrollX();
 		float endY = endHandleParams.y - this.getScrollY();
 		
-		startX = getDensityIndependentValue(startX, ctx);
-		startY = getDensityIndependentValue(startY, ctx);
-		endX = getDensityIndependentValue(endX, ctx);
-		endY = getDensityIndependentValue(endY, ctx);
+		startX = getDensityIndependentValue(startX, ctx) / scale;
+		startY = getDensityIndependentValue(startY, ctx) / scale;
+		endX = getDensityIndependentValue(endX, ctx) / scale;
+		endY = getDensityIndependentValue(endY, ctx) / scale;
 		
 		
 		if(mLastTouchedSelectionHandle == SELECTION_START_HANDLE && startX > 0 && startY > 0){
@@ -632,13 +639,13 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		try {
 			JSONObject selectionBoundsObject = new JSONObject(handleBounds);
 			
-			
+			float scale = getDensityIndependentValue(this.getScale(), ctx);
 			
 			Rect handleRect = new Rect();
-			handleRect.left = (int) getDensityDependentValue(selectionBoundsObject.getInt("left"), getContext());
-			handleRect.top = (int) getDensityDependentValue(selectionBoundsObject.getInt("top"), getContext());
-			handleRect.right = (int) getDensityDependentValue(selectionBoundsObject.getInt("right"), getContext());
-			handleRect.bottom = (int) getDensityDependentValue(selectionBoundsObject.getInt("bottom"), getContext());
+			handleRect.left = (int) (getDensityDependentValue(selectionBoundsObject.getInt("left"), getContext()) * scale);
+			handleRect.top = (int) (getDensityDependentValue(selectionBoundsObject.getInt("top"), getContext()) * scale);
+			handleRect.right = (int) (getDensityDependentValue(selectionBoundsObject.getInt("right"), getContext()) * scale);
+			handleRect.bottom = (int) (getDensityDependentValue(selectionBoundsObject.getInt("bottom"), getContext()) * scale);
 			
 			this.mSelectionBounds = handleRect;
 			this.selectedRange = range;
@@ -647,10 +654,10 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 			JSONObject menuBoundsObject = new JSONObject(menuBounds);
 			
 			Rect displayRect = new Rect();
-			displayRect.left = (int) getDensityDependentValue(menuBoundsObject.getInt("left"), getContext());
-			displayRect.top = (int) getDensityDependentValue(menuBoundsObject.getInt("top") - 25, getContext());
-			displayRect.right = (int) getDensityDependentValue(menuBoundsObject.getInt("right"), getContext());
-			displayRect.bottom = (int) getDensityDependentValue(menuBoundsObject.getInt("bottom") + 25, getContext());
+			displayRect.left = (int) (getDensityDependentValue(menuBoundsObject.getInt("left"), getContext()) * scale);
+			displayRect.top = (int) (getDensityDependentValue(menuBoundsObject.getInt("top") - 25, getContext()) * scale);
+			displayRect.right = (int) (getDensityDependentValue(menuBoundsObject.getInt("right"), getContext()) * scale);
+			displayRect.bottom = (int) (getDensityDependentValue(menuBoundsObject.getInt("bottom") + 25, getContext()) * scale);
 			
 			if(!this.isInSelectionMode()){
 				this.startSelectionMode();
