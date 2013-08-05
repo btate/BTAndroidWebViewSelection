@@ -1,17 +1,52 @@
+*.pydevproject
+.project
 .metadata
+bin/**
 tmp/**
-.DS_Store
+tmp/**/*
 *.tmp
 *.bak
-tmp/**/*
 *.swp
 *~.nib
-Thumbs.db
-Desktop.ini
-*~
-*.apk
-bin
-gen
 local.properties
-*.jar
 .classpath
+.settings/
+.loadpath
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Mac Files
+.DS_Store
+
+# Intellij project files
+*.iml
+*.eml
+*.ipr
+*.iws
+.idea/
