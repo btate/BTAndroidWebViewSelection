@@ -15,7 +15,7 @@ android.selection.lastTouchPoint = null;
  */
 android.selection.startTouch = function(x, y){
 	
-	android.selection.lastTouchPoint = {'x': x, 'y': y};
+	android.selection.lastTouchPoint = {'x': parseFloat(x + ""), 'y': parseFloat(y + "")};
 	
 };
 
@@ -222,7 +222,7 @@ android.selection.saveSelectionEnd = function(){
 android.selection.setStartPos = function(x, y){
 	
 	try{
-		android.selection.selectionStartRange = document.caretRangeFromPoint(x, y);
+		android.selection.selectionStartRange = document.caretRangeFromPoint(parseFloat(x + ""), parseFloat(y + ""));
 		
 		android.selection.selectBetweenHandles();
 	}catch(err){
@@ -237,7 +237,7 @@ android.selection.setStartPos = function(x, y){
 android.selection.setEndPos = function(x, y){
 	
 	try{	
-		android.selection.selectionEndRange = document.caretRangeFromPoint(x, y);
+		android.selection.selectionEndRange = document.caretRangeFromPoint(parseFloat(x + ""), parseFloat(y + ""));
 		
 		android.selection.selectBetweenHandles();
 	

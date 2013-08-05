@@ -1,5 +1,7 @@
 package com.brandontate.androidwebviewselection;
 
+import android.webkit.WebSettings;
+import android.webkit.WebViewClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,22 +43,22 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	protected	Context	ctx;
 	
 	/** The context menu. */
-	private QuickAction mContextMenu;
+    protected QuickAction mContextMenu;
 	
 	/** The drag layer for selection. */
-	private DragLayer mSelectionDragLayer;
+    protected DragLayer mSelectionDragLayer;
 	
 	/** The drag controller for selection. */
-	private DragController mDragController;
+    protected DragController mDragController;
 	
 	/** The start selection handle. */
-	private ImageView mStartSelectionHandle;
+    protected ImageView mStartSelectionHandle;
 	
 	/** the end selection handle. */
-	private ImageView mEndSelectionHandle;
+    protected ImageView mEndSelectionHandle;
 	
 	/** The selection bounds. */
-	private Rect mSelectionBounds = null;
+	protected Rect mSelectionBounds = null;
 	
 	/** The previously selected region. */
 	protected Region lastSelectedRegion = null;
@@ -81,15 +83,16 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	
 	
 	/** Identifier for the selection start handle. */
-	private final int SELECTION_START_HANDLE = 0;
+    protected final int SELECTION_START_HANDLE = 0;
 	
 	/** Identifier for the selection end handle. */
-	private final int SELECTION_END_HANDLE = 1;
+    protected final int SELECTION_END_HANDLE = 1;
 	
 	/** Last touched selection handle. */
-	private int mLastTouchedSelectionHandle = -1;
-	
-	
+    protected int mLastTouchedSelectionHandle = -1;
+
+    /** The current scale of the web view. */
+	protected float mCurrentScale = 1.0f;
 	
 	public BTWebView(Context context) {
 		super(context);
@@ -130,11 +133,9 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		
-		float xPoint = getDensityIndependentValue(event.getX(), ctx) / getDensityIndependentValue(this.getScale(), ctx);
-		float yPoint = getDensityIndependentValue(event.getY(), ctx) / getDensityIndependentValue(this.getScale(), ctx);
-		
-		// TODO: Need to update this to use this.getScale() as a factor.
-		
+		float xPoint = getDensityIndependentValue(event.getX(), ctx) / getDensityIndependentValue(getScale(), ctx);
+		float yPoint = getDensityIndependentValue(event.getY(), ctx) / getDensityIndependentValue(getScale(), ctx);
+
 		if(event.getAction() == MotionEvent.ACTION_DOWN){
 			
 			String startTouchUrl = String.format("javascript:android.selection.startTouch(%f, %f);", 
@@ -224,7 +225,21 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		// Webview setup
 		this.getSettings().setJavaScriptEnabled(true);
 		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-		this.getSettings().setPluginsEnabled(true);
+		this.getSettings().setPluginState(WebSettings.PluginState.ON);
+        //this.getSettings().setBuiltInZoomControls(true);
+
+        // Webview client.
+        setWebViewClient(new WebViewClient(){
+            // This is how it is supposed to work, so I'll leave it in, but this doesn't get called on pinch
+            // So for now I have to use deprected getScale method.
+            @Override
+            public void onScaleChanged(WebView view, float oldScale, float newScale) {
+                super.onScaleChanged(view, oldScale, newScale);
+                mCurrentScale = newScale;
+            }
+        });
+
+
 		
 		// Zoom out fully
 		//this.getSettings().setLoadWithOverviewMode(true);
@@ -340,8 +355,7 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	
 	/**
 	 * Starts selection mode.
-	 * 
-	 * @param	selectionBounds
+	 *
 	 */
 	public void startSelectionMode(){
 		
@@ -461,7 +475,7 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 		MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams) this.mStartSelectionHandle.getLayoutParams();
 		MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams) this.mEndSelectionHandle.getLayoutParams();
 		
-		float scale = getDensityIndependentValue(this.getScale(), ctx);
+		float scale = getDensityIndependentValue(getScale(), ctx);
 		
 		float startX = startHandleParams.x - this.getScrollX();
 		float startY = startHandleParams.y - this.getScrollY();
@@ -495,9 +509,9 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	
 	/**
 	 * Shows the context menu using the given region as an anchor point.
-	 * @param region
+	 * @param displayRect
 	 */
-	private void showContextMenu(Rect displayRect){
+	protected void showContextMenu(Rect displayRect){
 		
 		// Don't show this twice
 		if(this.contextMenuVisible){
@@ -632,14 +646,12 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 	 * @param text
 	 * @param handleBounds
 	 * @param menuBounds
-	 * @param showHighlight
-	 * @param showUnHighlight
 	 */
 	public void tsjiSelectionChanged(String range, String text, String handleBounds, String menuBounds){
 		try {
 			JSONObject selectionBoundsObject = new JSONObject(handleBounds);
 			
-			float scale = getDensityIndependentValue(this.getScale(), ctx);
+			float scale = getDensityIndependentValue(getScale(), ctx);
 			
 			Rect handleRect = new Rect();
 			handleRect.left = (int) (getDensityDependentValue(selectionBoundsObject.getInt("left"), getContext()) * scale);
