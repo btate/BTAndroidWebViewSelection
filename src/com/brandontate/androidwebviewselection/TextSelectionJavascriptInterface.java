@@ -18,6 +18,7 @@ package com.brandontate.androidwebviewselection;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.JavascriptInterface;
 
 /**
  * This javascript interface allows the page to communicate that text has been selected by the user.
@@ -62,6 +63,7 @@ public class TextSelectionJavascriptInterface {
 	 * Handles javascript errors.
 	 * @param error
 	 */
+    @JavascriptInterface
 	public void jsError(String error){
 		if(this.listener != null){
 			this.listener.tsjiJSError(error);
@@ -72,6 +74,7 @@ public class TextSelectionJavascriptInterface {
 	 * Gets the interface name
 	 * @return
 	 */
+    @JavascriptInterface
 	public String getInterfaceName(){
 		return this.interfaceName;
 	}
@@ -79,6 +82,7 @@ public class TextSelectionJavascriptInterface {
 	/**
 	 * Put the app in "selection mode".
 	 */
+    @JavascriptInterface
 	public void startSelectionMode(){
 		
 		if(this.listener != null)
@@ -89,6 +93,7 @@ public class TextSelectionJavascriptInterface {
 	/**
 	 * Take the app out of "selection mode".
 	 */
+    @JavascriptInterface
 	public void endSelectionMode(){
 		
 		if(this.listener != null)
@@ -100,16 +105,21 @@ public class TextSelectionJavascriptInterface {
 	 * Show the context menu
 	 * @param range
 	 * @param text
-	 * @param bounds
-	 * @param showHighlight
-	 * @param showUnHighlight
+	 * @param handleBounds
+	 * @param menuBounds
 	 */
+    @JavascriptInterface
 	public void selectionChanged(String range, String text, String handleBounds, String menuBounds){
 		if(this.listener != null)
 			this.listener.tsjiSelectionChanged(range, text, handleBounds, menuBounds);
 		
 	}
-	
+
+    /**
+     * Sets the content width of the page.
+     * @param contentWidth
+     */
+    @JavascriptInterface
 	public void setContentWidth(float contentWidth){
 		if(this.listener != null)
 			this.listener.tsjiSetContentWidth(contentWidth);
