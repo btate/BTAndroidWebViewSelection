@@ -91,6 +91,9 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
     /** Selection mode flag. */
     protected boolean mInSelectionMode = false;
 
+    /** Flag for dragging. */
+    protected boolean mDragging = false;
+
     /** Flag to stop from showing context menu twice. */
     protected boolean mContextMenuVisible = false;
 
@@ -475,6 +478,14 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 
     }
 
+    /**
+     * Checks to see if the view is currently dragging.
+     * @return
+     */
+    public boolean isDragging(){
+        return mDragging;
+    }
+
     //*****************************************************
     //*
     //*		DragListener Methods
@@ -490,6 +501,8 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
         // Let the DragController initiate a drag-drop sequence.
         // I use the dragInfo to pass along the object being dragged.
         // I'm not sure how the Launcher designers do this.
+
+        mDragging = true;
         Object dragInfo = v;
         mDragController.startDrag (v, mSelectionDragLayer, dragInfo, DragController.DRAG_ACTION_MOVE);
         return true;
@@ -531,6 +544,8 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
             String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
             loadUrl(saveEndString);
         }
+
+        mDragging = false;
 
     }
 
