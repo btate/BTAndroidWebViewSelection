@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2012 Brandon Tate
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 // Namespace
 var android = {};
 android.selection = {};
@@ -57,7 +41,7 @@ android.selection.clearSelection = function(){
 	   	var sel = window.getSelection();
 	   	sel.removeAllRanges();
 	}catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("clearSelection - " + err);
 	}	
 };
 
@@ -92,7 +76,7 @@ android.selection.longTouch = function() {
 	   	
 	 }
 	 catch(err){
-	 	window.TextSelection.jsError(err);
+	 	window.TextSelection.jsError("longTouch - " + err);
 	 }
    	
 };
@@ -105,6 +89,7 @@ android.selection.selectionChanged = function(){
 	try{
 	
 		var sel = window.getSelection();
+		
 		if(!sel){
 			return;
 		}
@@ -125,12 +110,10 @@ android.selection.selectionChanged = function(){
     	endRange.setStart(range.endContainer, range.endOffset);
     	endRange.insertNode(selectionEnd[0]);
 	    
-	   	
-	   	// Create the bounds json object for the selection
-	   	var handleBounds = "{'left': " + selectionStart.offset().left + ", ";
-	   	handleBounds += "'top': " + selectionStart.offset().top + ", ";
-	   	handleBounds += "'right': " + selectionEnd.offset().left + ", ";
-	   	handleBounds += "'bottom': " + selectionEnd.offset().top + "}";
+	   	var handleBounds = { "left": selectionStart.offset().left,
+	   						 "top": selectionStart.offset().top,
+	   						 "right": selectionEnd.offset().left,
+	   						 "bottom": selectionEnd.offset().top };
 	   	
 	   	
 	   	// Pull the spans
@@ -143,11 +126,12 @@ android.selection.selectionChanged = function(){
 	   	
 	   	// Menu bounds
 	   	var rect = range.getBoundingClientRect();
+	 
 	   	
-	   	var menuBounds = "{'left': " + rect.left + ", ";
-	   	menuBounds += "'top': " + rect.top + ", ";
-	   	menuBounds += "'right': " + rect.right + ", ";
-	   	menuBounds += "'bottom': " + rect.bottom + "}";
+	   	var menuBounds = { "left": rect.left,
+	   					   "top": rect.top,
+	   					   "right": rect.right,
+	   					   "bottom": rect.bottom };
 	   	
 	   	// Rangy
 	   	var rangyRange = android.selection.getRange();
@@ -159,25 +143,32 @@ android.selection.selectionChanged = function(){
 	   	window.TextSelection.setContentWidth(document.body.clientWidth);
 	   	
 	   	// Tell the interface that the selection changed
-	   	window.TextSelection.selectionChanged(rangyRange, text, handleBounds, menuBounds);
+	   	window.TextSelection.selectionChanged(rangyRange, text, JSON.stringify(handleBounds), JSON.stringify(menuBounds));
+	   	
 	}
 	catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("selectionChanged - " + err);
 	}
 };
 
 
 
 android.selection.getRange = function() {
-    var serializedRangeSelected = rangy.serializeSelection();
-    var serializerModule = rangy.modules.Serializer;
-    if (serializedRangeSelected != '') {
-        if (rangy.supported && serializerModule && serializerModule.supported) {
-            var beginingCurly = serializedRangeSelected.indexOf("{");
-            serializedRangeSelected = serializedRangeSelected.substring(0, beginingCurly);
-            return serializedRangeSelected;
-        }
+	try{
+		
+	    var serializedRangeSelected = rangy.serializeSelection();
+	    var serializerModule = rangy.modules.Serializer;
+	    if (serializedRangeSelected != '') {
+	        if (rangy.supported && serializerModule && serializerModule.supported) {
+	            var beginingCurly = serializedRangeSelected.indexOf("{");
+	            serializedRangeSelected = serializedRangeSelected.substring(0, beginingCurly);
+	            return serializedRangeSelected;
+	        }
+	    }
     }
+    catch(err){
+		window.TextSelection.jsError("getRange - " + err);
+	}
 }
 
 
@@ -207,7 +198,7 @@ android.selection.saveSelectionStart = function(){
 		
 		android.selection.selectionStartRange = saveRange;
 	}catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("saveSelectionStart - " + err);
 	}
 
 };
@@ -225,7 +216,7 @@ android.selection.saveSelectionEnd = function(){
 		
 		android.selection.selectionEndRange = saveRange;
 	}catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("saveSelectionEnd - " + err);
 	}
 	
 };
@@ -238,11 +229,12 @@ android.selection.saveSelectionEnd = function(){
 android.selection.setStartPos = function(x, y){
 	
 	try{
+		
 		android.selection.selectionStartRange = document.caretRangeFromPoint(parseFloat(x + ""), parseFloat(y + ""));
 		
 		android.selection.selectBetweenHandles();
 	}catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("setStartPos - " + err);
 	}
 
 };
@@ -252,13 +244,13 @@ android.selection.setStartPos = function(x, y){
  */
 android.selection.setEndPos = function(x, y){
 	
-	try{	
+	try{
 		android.selection.selectionEndRange = document.caretRangeFromPoint(parseFloat(x + ""), parseFloat(y + ""));
 		
 		android.selection.selectBetweenHandles();
 	
 	}catch(err){
-		window.TextSelection.jsError(err);
+		window.TextSelection.jsError("setEndPos - " + err);
 	}
 
 };
@@ -269,6 +261,7 @@ android.selection.setEndPos = function(x, y){
 android.selection.selectBetweenHandles = function(){
 	
 	try{
+	
 		var startCaret = android.selection.selectionStartRange;
 		var endCaret = android.selection.selectionEndRange;
 		
@@ -302,9 +295,8 @@ android.selection.selectBetweenHandles = function(){
 		android.selection.selectionChanged();
    	}
    	catch(err){
-   		window.TextSelection.jsError(err);
+   		window.TextSelection.jsError("selectBetweenHandles - " + err);
    	}
 };
-
 
 

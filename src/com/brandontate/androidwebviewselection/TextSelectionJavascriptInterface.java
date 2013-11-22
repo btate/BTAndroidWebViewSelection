@@ -1,33 +1,18 @@
-/*
- * Copyright (C) 2012 Brandon Tate
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.brandontate.androidwebviewselection;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 /**
  * This javascript interface allows the page to communicate that text has been selected by the user.
- * 
- * @author Brandon Tate
+ *
+ * @author btate
  *
  */
 public class TextSelectionJavascriptInterface {
-
+    
 	/** The TAG for logging. */
 	private static final String TAG = "TextSelectionJavascriptInterface";
 	
@@ -35,10 +20,13 @@ public class TextSelectionJavascriptInterface {
 	private final String interfaceName = "TextSelection";
 	
 	/** The webview to work with. */
-	private TextSelectionJavascriptInterfaceListener listener;
+	private TextSelectionJavascriptInterfaceListener mListener;
 	
 	/** The context. */
 	Context mContext;
+    
+    // Need handler for callbacks to the UI thread
+    final Handler mHandler = new Handler();
 	
 	
 	/**
@@ -50,13 +38,13 @@ public class TextSelectionJavascriptInterface {
 	}
 	
 	/**
-	 * Constructor accepting context and listener.
+	 * Constructor accepting context and mListener.
 	 * @param c
-	 * @param listener
+	 * @param mListener
 	 */
-	public TextSelectionJavascriptInterface(Context c, TextSelectionJavascriptInterfaceListener listener){
+	public TextSelectionJavascriptInterface(Context c, TextSelectionJavascriptInterfaceListener mListener){
 		this.mContext = c;
-		this.listener = listener;
+		this.mListener = mListener;
 	}
 	
 	/**
@@ -64,9 +52,15 @@ public class TextSelectionJavascriptInterface {
 	 * @param error
 	 */
     @JavascriptInterface
-	public void jsError(String error){
-		if(this.listener != null){
-			this.listener.tsjiJSError(error);
+	public void jsError(final String error){
+		if(this.mListener != null){
+            
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.tsjiJSError(error);
+                }
+            });
 		}
 	}
 	
@@ -85,9 +79,14 @@ public class TextSelectionJavascriptInterface {
     @JavascriptInterface
 	public void startSelectionMode(){
 		
-		if(this.listener != null)
-			this.listener.tsjiStartSelectionMode();
-		
+		if(this.mListener != null)
+            
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.tsjiStartSelectionMode();
+                }
+            });
 	}
 	
 	/**
@@ -96,33 +95,48 @@ public class TextSelectionJavascriptInterface {
     @JavascriptInterface
 	public void endSelectionMode(){
 		
-		if(this.listener != null)
-			this.listener.tsjiEndSelectionMode();
-		
+		if(this.mListener != null)
+            
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.tsjiEndSelectionMode();
+                }
+            });
 	}
-	
+    
 	/**
 	 * Show the context menu
 	 * @param range
 	 * @param text
-	 * @param handleBounds
 	 * @param menuBounds
 	 */
     @JavascriptInterface
-	public void selectionChanged(String range, String text, String handleBounds, String menuBounds){
-		if(this.listener != null)
-			this.listener.tsjiSelectionChanged(range, text, handleBounds, menuBounds);
+	public void selectionChanged(final String range, final String text, final String handleBounds, final String menuBounds){
+        Log.i("BTSelectionWebView", "handleBounds: " + handleBounds);
+        Log.i("BTSelectionWebView", "menuBounds: " + menuBounds);
+		if(this.mListener != null)  {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.tsjiSelectionChanged(range, text, handleBounds, menuBounds);
+                }
+            });
+        }
+        else
+            Log.i("BTSelectionWebView", "mListener null");
 		
 	}
-
-    /**
-     * Sets the content width of the page.
-     * @param contentWidth
-     */
+    
     @JavascriptInterface
-	public void setContentWidth(float contentWidth){
-		if(this.listener != null)
-			this.listener.tsjiSetContentWidth(contentWidth);
+	public void setContentWidth(final float contentWidth){
+		if(this.mListener != null)
+            
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.tsjiSetContentWidth(contentWidth);
+                }
+            });
 	}
-	
 }
