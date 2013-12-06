@@ -182,21 +182,23 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
             loadUrl(startTouchUrl);
 
             // Flag scrolling for first touch
-            //if(!isInSelectionMode())
-            //mScrolling = true;
-
-
+            //mScrolling = !isInSelectionMode();
 
         }
         else if(event.getAction() == MotionEvent.ACTION_UP){
             // Check for scrolling flag
             if(!mScrolling){
+                mScrolling = false;
                 endSelectionMode();
+                return false;
             }
 
             mScrollDiffX = 0;
             mScrollDiffY = 0;
             mScrolling = false;
+
+            // Fixes 4.4 double selection
+            return true;
 
         }
         else if(event.getAction() == MotionEvent.ACTION_MOVE){
@@ -207,13 +209,8 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
             mLastTouchX = xPoint;
             mLastTouchY = yPoint;
 
-
             // Only account for legitimate movement.
-            if(Math.abs(mScrollDiffX) > 10 || Math.abs(mScrollDiffY) > 10){
-                mScrolling = true;
-
-            }
-
+            mScrolling = (Math.abs(mScrollDiffX) > 10 || Math.abs(mScrollDiffY) > 10);
 
         }
 
@@ -225,11 +222,10 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
     public boolean onLongClick(View v){
 
         // Tell the javascript to handle this if not in selection mode
-        //if(!isInSelectionMode()){
-        loadUrl("javascript:android.selection.longTouch();");
-        mScrolling = true;
-        //}
-
+        if(!isInSelectionMode()){
+            loadUrl("javascript:android.selection.longTouch();");
+            mScrolling = true;
+        }
 
         // Don't let the webview handle it
         return true;
