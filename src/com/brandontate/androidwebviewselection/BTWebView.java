@@ -16,6 +16,8 @@
 
 package com.brandontate.androidwebviewselection;
 
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import org.json.JSONException;
@@ -102,6 +104,9 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 
     /** The current scale of the web view. */
     protected float mCurrentScale = 1.0f;
+
+    /** Accessibility manager for speaking events. */
+    private AccessibilityManager mAccessibilityManager;
 
 
     //*****************************************************
@@ -271,6 +276,7 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
         });
 
 
+        mAccessibilityManager = (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
 
         // Zoom out fully
         //getSettings().setLoadWithOverviewMode(true);
@@ -743,6 +749,8 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
             mSelectedRange = range;
             mSelectedText = text;
 
+            fireAccessibility(text);
+
             if(!isInSelectionMode()){
                 startSelectionMode();
             }
@@ -781,6 +789,30 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
         }
 
         return null;
+    }
+
+
+    //*****************************************************
+    //*
+    //*		Accessibility
+    //*
+    //*****************************************************
+
+    /**
+     * Sends accessibility event that speaks the text.
+     * @param speechText
+     */
+    private void fireAccessibility(String speechText){
+
+        // Make sure accessibility is on
+        if(!mAccessibilityManager.isEnabled()){
+            return;
+        }
+
+        AccessibilityEvent event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        event.setContentDescription(speechText);
+        mAccessibilityManager.sendAccessibilityEvent(event);
+
     }
 
     //*****************************************************
