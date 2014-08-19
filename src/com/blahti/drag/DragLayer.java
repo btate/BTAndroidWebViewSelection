@@ -146,6 +146,14 @@ public void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffse
 public void onDragOver(DragSource source, int x, int y, int xOffset, int yOffset,
         DragView dragView, Object dragInfo)
 {
+	 View v = (View) dragInfo;
+
+	    int w = v.getWidth ();
+	    int h = v.getHeight ();
+	    int left = x - xOffset;
+	    int top = y - yOffset;
+	    DragLayer.LayoutParams lp = new DragLayer.LayoutParams (w, h, left, top);
+	    this.updateViewLayout(v, lp);
 }
 
 public void onDragExit(DragSource source, int x, int y, int xOffset, int yOffset,
