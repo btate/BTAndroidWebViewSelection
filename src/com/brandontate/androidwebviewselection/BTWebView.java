@@ -513,6 +513,37 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 
     }
 
+	@Override
+	public void onDrag() {
+		// TODO Auto-generated method stub
+
+        MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams) mStartSelectionHandle.getLayoutParams();
+        MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams) mEndSelectionHandle.getLayoutParams();
+
+        float scale = getDensityIndependentValue(getScale(), mContext);
+
+        float startX = startHandleParams.x - getScrollX();
+        float startY = startHandleParams.y - getScrollY();
+        float endX = endHandleParams.x - getScrollX();
+        float endY = endHandleParams.y - getScrollY();
+
+        startX = getDensityIndependentValue(startX, mContext) / scale;
+        startY = getDensityIndependentValue(startY, mContext) / scale;
+        endX = getDensityIndependentValue(endX, mContext) / scale;
+        endY = getDensityIndependentValue(endY, mContext) / scale;
+
+
+        if(mLastTouchedSelectionHandle == SELECTION_START_HANDLE && startX > 0 && startY > 0){
+            String saveStartString = String.format(Locale.US, "javascript: android.selection.setStartPos(%f, %f);", startX, startY);
+            loadUrl(saveStartString);
+        }
+
+        if(mLastTouchedSelectionHandle == SELECTION_END_HANDLE && endX > 0 && endY > 0){
+            String saveEndString = String.format(Locale.US, "javascript: android.selection.setEndPos(%f, %f);", endX, endY);
+            loadUrl(saveEndString);
+        }
+	}
+	
     @Override
     public void onDragEnd() {
         // TODO Auto-generated method stub

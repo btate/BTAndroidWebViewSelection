@@ -119,6 +119,15 @@ public class DragController {
     }
 
     /**
+     * Used to notify the on drag event
+     * */
+    public void onDrag() {
+  	  if (mListener != null) {
+            mListener.onDrag();
+        }
+    }
+    
+    /**
      * Starts a drag. 
      * It creates a bitmap of the view being dragged. That bitmap is what you see moving.
      * The actual view can be repositioned if that is what the onDrop handle chooses to do.
@@ -290,8 +299,8 @@ public class DragController {
             recordScreenSize();
         }
 
-        final int screenX = clamp((int)ev.getRawX(), 0, mDisplayMetrics.widthPixels);
-        final int screenY = clamp((int)ev.getRawY(), 0, mDisplayMetrics.heightPixels);
+        final float screenX = clamp((int)ev.getRawX(), 0, mDisplayMetrics.widthPixels);
+        final float screenY = clamp((int)ev.getRawY(), 0, mDisplayMetrics.heightPixels);
 
         switch (action) {
             case MotionEvent.ACTION_MOVE:
@@ -336,8 +345,8 @@ public class DragController {
         }
 
         final int action = ev.getAction();
-        final int screenX = clamp((int)ev.getRawX(), 0, mDisplayMetrics.widthPixels);
-        final int screenY = clamp((int)ev.getRawY(), 0, mDisplayMetrics.heightPixels);
+        final float screenX = clamp((int)ev.getRawX(), 0, mDisplayMetrics.widthPixels);
+        final float screenY = clamp((int)ev.getRawY(), 0, mDisplayMetrics.heightPixels);
 
         switch (action) {
         case MotionEvent.ACTION_DOWN:
@@ -402,6 +411,9 @@ public class DragController {
                 }
             }
             */
+            if (mDragSource!=null && mDragging){
+        		onDrag();
+        	}
             break;
         case MotionEvent.ACTION_UP:
             if (mDragging) {
@@ -439,7 +451,7 @@ public class DragController {
         return false;
     }
 
-    private DropTarget findDropTarget(int x, int y, int[] dropCoordinates) {
+    private DropTarget findDropTarget(float x, float y, int[] dropCoordinates) {
         final Rect r = mRectTemp;
 
         final ArrayList<DropTarget> dropTargets = mDropTargets;
@@ -449,9 +461,9 @@ public class DragController {
             target.getHitRect(r);
             target.getLocationOnScreen(dropCoordinates);
             r.offset(dropCoordinates[0] - target.getLeft(), dropCoordinates[1] - target.getTop());
-            if (r.contains(x, y)) {
-                dropCoordinates[0] = x - dropCoordinates[0];
-                dropCoordinates[1] = y - dropCoordinates[1];
+            if (r.contains((int)x, (int)y)) {
+                dropCoordinates[0] = (int) x - dropCoordinates[0];
+                dropCoordinates[1] = (int) y - dropCoordinates[1];
                 return target;
             }
         }
@@ -470,7 +482,7 @@ public class DragController {
     /**
      * Clamp val to be &gt;= min and &lt; max.
      */
-    private static int clamp(int val, int min, int max) {
+    private static float clamp(float val, float min, float max) {
         if (val < min) {
             return min;
         } else if (val >= max) {
