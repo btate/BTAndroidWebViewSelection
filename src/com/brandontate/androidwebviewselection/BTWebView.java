@@ -16,6 +16,8 @@
 
 package com.brandontate.androidwebviewselection;
 
+import java.util.Locale;
+
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import org.json.JSONException;
@@ -171,7 +173,7 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 
         if(event.getAction() == MotionEvent.ACTION_DOWN){
 
-            String startTouchUrl = String.format("javascript:android.selection.startTouch(%f, %f);",
+            String startTouchUrl = String.format(Locale.US, "javascript:android.selection.startTouch(%f, %f);",
                     xPoint, yPoint);
 
             mLastTouchX = xPoint;
@@ -532,12 +534,12 @@ public class BTWebView extends WebView implements TextSelectionJavascriptInterfa
 
 
         if(mLastTouchedSelectionHandle == SELECTION_START_HANDLE && startX > 0 && startY > 0){
-            String saveStartString = String.format("javascript: android.selection.setStartPos(%f, %f);", startX, startY);
+            String saveStartString = String.format(Locale.US, "javascript: android.selection.setStartPos(%f, %f);", startX, startY);
             loadUrl(saveStartString);
         }
 
         if(mLastTouchedSelectionHandle == SELECTION_END_HANDLE && endX > 0 && endY > 0){
-            String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
+            String saveEndString = String.format(Locale.US, "javascript: android.selection.setEndPos(%f, %f);", endX, endY);
             loadUrl(saveEndString);
         }
 
